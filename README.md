@@ -498,7 +498,7 @@ Items are ordered by priority. High-priority items should be tackled first as th
 - [ ] **Image scanning** — integrate `trivy` or `docker scout` into the build pipeline to scan for CVEs before deploy
 
 ### CI/CD Pipeline
-- [ ] **GitHub Actions workflow** — `lint → test → build → image scan → helm lint → deploy → smoke tests` on every push
+- [x] **GitHub Actions workflow** — `lint → test → build → image scan → helm lint → deploy → smoke tests` on every push
 - [ ] **ESLint** — add `eslint` with `@typescript-eslint` rules
 - [ ] **Pre-commit hooks** — add `husky` + `lint-staged` to enforce linting and tests before every commit
 - [ ] **Semantic versioning** — auto-generate image tags from git SHAs (`timeserver:$(git rev-parse --short HEAD)`)
