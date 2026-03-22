@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const configSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(8888),
+  NODE_ENV: z.string().optional(),
   LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "silent"])
     .default("info"),

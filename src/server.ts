@@ -18,20 +18,8 @@ startTracing();
 
 export const app = express();
 
-// Security headers via Helmet.
-// CSP is configured to allow the inline scripts and styles that Swagger UI requires.
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc:  ["'self'", "'unsafe-inline'"],
-        styleSrc:   ["'self'", "'unsafe-inline'"],
-        imgSrc:     ["'self'", "data:"],
-      },
-    },
-  })
-);
+// Strict security headers for all routes.
+app.use(helmet());
 
 app.use(express.json());
 
@@ -131,8 +119,20 @@ app.get("/api/v1/time", (req: Request, res: Response<TimeResponse | Record<strin
   return res.json(filtered);
 });
 
-// OpenAPI docs
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// OpenAPI docs — non-production only.
+// CSP is relaxed for this route only since Swagger UI requires unsafe-inline
+// scripts and styles. All other routes retain the strict global policy.
+if (config.NODE_ENV !== "production") {
+  app.use("/api/docs", helmet({ contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc:  ["'self'", "'unsafe-inline'"],
+      styleSrc:   ["'self'", "'unsafe-inline'"],
+      imgSrc:     ["'self'", "data:"],
+    },
+  }}));
+  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 
 // 404 fallback
 app.use((_req: Request, res: Response<ErrorResponse>) => {

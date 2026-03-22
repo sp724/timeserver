@@ -54,4 +54,18 @@ describe("configSchema", () => {
     expect(result.success).toBe(true);
     expect(result.data?.OTEL_EXPORTER_OTLP_ENDPOINT).toBe("http://jaeger:4318");
   });
+
+  it("accepts any string for NODE_ENV", () => {
+    for (const env of ["development", "production", "test", "staging"]) {
+      const result = configSchema.safeParse({ NODE_ENV: env });
+      expect(result.success).toBe(true);
+      expect(result.data?.NODE_ENV).toBe(env);
+    }
+  });
+
+  it("leaves NODE_ENV undefined when not set", () => {
+    const result = configSchema.safeParse({});
+    expect(result.success).toBe(true);
+    expect(result.data?.NODE_ENV).toBeUndefined();
+  });
 });

@@ -121,6 +121,14 @@ describe("GET /api/v1/time - cities query param", () => {
   });
 });
 
+describe("GET /api/docs", () => {
+  it("is available in non-production environments", async () => {
+    // NODE_ENV=test during Jest runs, which is not production
+    const res = await request(app).get("/api/docs/");
+    expect(res.status).toBe(200);
+  });
+});
+
 describe("Unknown routes", () => {
   it("returns 404 with error NotFound", async () => {
     const res = await request(app).get("/does-not-exist");
