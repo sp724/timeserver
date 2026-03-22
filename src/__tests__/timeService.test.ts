@@ -3,12 +3,13 @@ import { getCurrentTimes, formatTimeInZone } from "../timeService";
 const FIXED_DATE = new Date("2024-06-15T12:00:00.000Z");
 
 describe("getCurrentTimes", () => {
-  it("returns all 4 timezone keys", () => {
+  it("returns all 5 timezone keys", () => {
     const result = getCurrentTimes(FIXED_DATE);
     expect(result).toHaveProperty("toronto");
     expect(result).toHaveProperty("london");
     expect(result).toHaveProperty("mumbai");
     expect(result).toHaveProperty("tokyo");
+    expect(result).toHaveProperty("sydney");
   });
 
   it("sets generatedAt to the input date ISO string", () => {
@@ -22,14 +23,15 @@ describe("getCurrentTimes", () => {
     expect(result.london).toBeTruthy();
     expect(result.mumbai).toBeTruthy();
     expect(result.tokyo).toBeTruthy();
+    expect(result.sydney).toBeTruthy();
   });
 
   it("returns different time strings for different timezones", () => {
     const result = getCurrentTimes(FIXED_DATE);
-    const values = [result.toronto, result.london, result.mumbai, result.tokyo];
+    const values = [result.toronto, result.london, result.mumbai, result.tokyo, result.sydney];
     const unique = new Set(values);
-    // All 4 timezones are in different UTC offsets for this date
-    expect(unique.size).toBe(4);
+    // All 5 timezones are in different UTC offsets for this date
+    expect(unique.size).toBe(5);
   });
 
   it("uses real current time when called with no arguments", () => {

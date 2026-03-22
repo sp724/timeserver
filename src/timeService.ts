@@ -5,6 +5,7 @@ const TIMEZONES: TimeZoneConfig[] = [
   { city: "london",  timezone: "Europe/London" },
   { city: "mumbai",  timezone: "Asia/Kolkata" },
   { city: "tokyo",   timezone: "Asia/Tokyo" },
+  { city: "sydney",  timezone: "Australia/Sydney" },
 ];
 
 export function formatTimeInZone(date: Date, timezone: string): string {
@@ -32,6 +33,7 @@ export function getCurrentTimes(now: Date = new Date()): TimeResponse {
     london: times["london"],
     mumbai: times["mumbai"],
     tokyo: times["tokyo"],
+    sydney: times["sydney"],
     generatedAt: now.toISOString(),
   };
 }

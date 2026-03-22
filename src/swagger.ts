@@ -90,6 +90,7 @@ const options: swaggerJsdoc.Options = {
                       london: { type: "string", example: "2026-03-21, 02:00:00" },
                       mumbai: { type: "string", example: "2026-03-21, 07:30:00" },
                       tokyo: { type: "string", example: "2026-03-21, 11:00:00" },
+                      sydney: { type: "string", example: "2026-03-21, 13:00:00" },
                       generatedAt: { type: "string", format: "date-time", example: "2026-03-21T02:00:00.000Z" },
                     },
                   },

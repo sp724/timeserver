@@ -59,13 +59,14 @@ describe("GET /metrics", () => {
 });
 
 describe("GET /api/v1/time", () => {
-  it("returns 200 with all 4 city fields", async () => {
+  it("returns 200 with all 5 city fields", async () => {
     const res = await request(app).get("/api/v1/time");
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("toronto");
     expect(res.body).toHaveProperty("london");
     expect(res.body).toHaveProperty("mumbai");
     expect(res.body).toHaveProperty("tokyo");
+    expect(res.body).toHaveProperty("sydney");
   });
 
   it("returns JSON content-type", async () => {
@@ -79,6 +80,7 @@ describe("GET /api/v1/time", () => {
     expect(res.body.london).toBeTruthy();
     expect(res.body.mumbai).toBeTruthy();
     expect(res.body.tokyo).toBeTruthy();
+    expect(res.body.sydney).toBeTruthy();
   });
 
   it("includes RateLimit headers from express-rate-limit", async () => {

@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── 1. Type check ───────────────────────────────────────────────────────────
+  type-check:
+    name: Type Check
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+  # ── 2. Unit tests ───────────────────────────────────────────────────────────
+  test:
+    name: Unit Tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test
+
+  # ── 3. Docker build + Trivy image scan ──────────────────────────────────────
+  build-and-scan:
+    name: Docker Build & Image Scan
+    runs-on: self-hosted
+    needs: [type-check, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t timeserver:${{ github.sha }} .
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: timeserver:${{ github.sha }}
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+  # ── 4. Helm lint ────────────────────────────────────────────────────────────
+  helm-lint:
+    name: Helm Lint
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Lint Helm chart
+        run: helm lint ./helm/timeserver
+
+  # ── 5. Smoke tests ──────────────────────────────────────────────────────────
+  smoke-test:
+    name: Smoke Tests
+    runs-on: self-hosted
+    needs: [type-check, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Compile TypeScript
+        run: npm run build
+
+      - name: Start server in background
+        run: npm start &
+
+      - name: Wait for server to be ready
+        run: |
+          for i in {1..15}; do
+            curl -sf http://localhost:8888/health/live && echo "Server ready" && break
+            echo "Waiting... ($i)"
+            sleep 1
+          done
+
+      - name: Run smoke tests
+        run: npm run smoke-test

@@ -8,6 +8,7 @@ export interface TimeResponse {
   london: string;
   mumbai: string;
   tokyo: string;
+  sydney: string;
   generatedAt: string;
 }
 
