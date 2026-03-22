@@ -51,14 +51,14 @@ jobs:
       - name: Build Docker image
         run: docker build -t timeserver:${{ github.sha }} .
 
+      - name: Install Trivy (if not present)
+        run: |
+          if ! command -v trivy &> /dev/null; then
+            brew install aquasecurity/trivy/trivy
+          fi
+
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: timeserver:${{ github.sha }}
-          format: table
-          exit-code: 1
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
+        run: trivy image --exit-code 1 --ignore-unfixed --severity CRITICAL,HIGH timeserver:${{ github.sha }}
 
   # ── 4. Helm lint ────────────────────────────────────────────────────────────
   helm-lint:
