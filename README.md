@@ -505,7 +505,7 @@ Items are ordered by priority. High-priority items should be tackled first as th
 
 ### CI/CD Pipeline
 - [x] **GitHub Actions workflow** — `lint → test → build → image scan → helm lint → deploy → smoke tests` on every push
-- [ ] **ESLint** — add `eslint` with `@typescript-eslint` rules
+- [x] **ESLint** — add `eslint` with `@typescript-eslint` rules
 - [ ] **Pre-commit hooks** — add `husky` + `lint-staged` to enforce linting and tests before every commit
 - [x] **Semantic versioning** — auto-generate image tags from git SHAs (`timeserver:$(git rev-parse --short HEAD)`)
 

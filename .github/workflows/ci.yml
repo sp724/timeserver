@@ -6,7 +6,24 @@ on:
     branches: [main]
 
 jobs:
-  # ── 1. Type check ───────────────────────────────────────────────────────────
+  # ── 1. Lint ──────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # ── 2. Type check ───────────────────────────────────────────────────────────
   type-check:
     name: Type Check
     runs-on: self-hosted
@@ -44,7 +61,7 @@ jobs:
   build-and-scan:
     name: Docker Build & Image Scan
     runs-on: self-hosted
-    needs: [type-check, test]
+    needs: [lint, type-check, test]
     steps:
       - uses: actions/checkout@v4
 
@@ -78,7 +95,7 @@ jobs:
   smoke-test:
     name: Smoke Tests
     runs-on: self-hosted
-    needs: [type-check, test]
+    needs: [lint, type-check, test]
     steps:
       - uses: actions/checkout@v4
 
