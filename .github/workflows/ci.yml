@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -105,3 +105,65 @@ jobs:
 
       - name: Run smoke tests
         run: npm run smoke-test
+
+      - name: Stop background server
+        if: always()
+        run: lsof -ti:8888 | xargs kill -9 2>/dev/null || true
+
+  # ── 6. Deploy to minikube ────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to Minikube
+    runs-on: self-hosted
+    needs: [build-and-scan, helm-lint, smoke-test]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify minikube is running
+        run: minikube status
+
+      - name: Set image tag
+        id: tag
+        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: docker build -t timeserver:${{ steps.tag.outputs.short }} .
+
+      - name: Load image into minikube
+        run: minikube image load timeserver:${{ steps.tag.outputs.short }}
+
+      - name: Helm upgrade
+        run: |
+          helm upgrade timeserver ./helm/timeserver \
+            --set image.tag=${{ steps.tag.outputs.short }} \
+            --install \
+            --wait \
+            --timeout 120s
+
+      - name: Start port-forward
+        run: |
+          lsof -ti:8888 | xargs kill -9 2>/dev/null || true
+          kubectl port-forward svc/timeserver-timeserver 8888:8888 &
+          echo "PF_PID=$!" >> $GITHUB_ENV
+
+      - name: Wait for service to be ready
+        run: |
+          for i in {1..15}; do
+            curl -sf http://localhost:8888/health/live && echo "Service ready" && break
+            echo "Waiting... ($i)"
+            sleep 1
+          done
+
+      - name: Run smoke tests against minikube
+        run: npm run smoke-test
+
+      - name: Stop port-forward
+        if: always()
+        run: kill $PF_PID 2>/dev/null || true
