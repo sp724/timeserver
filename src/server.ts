@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
+import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 import { randomUUID } from "crypto";
@@ -16,6 +17,21 @@ import { HealthResponse, ReadinessResponse, TimeResponse, ErrorResponse, CITY_NA
 startTracing();
 
 export const app = express();
+
+// Security headers via Helmet.
+// CSP is configured to allow the inline scripts and styles that Swagger UI requires.
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc:  ["'self'", "'unsafe-inline'"],
+        styleSrc:   ["'self'", "'unsafe-inline'"],
+        imgSrc:     ["'self'", "data:"],
+      },
+    },
+  })
+);
 
 app.use(express.json());
 

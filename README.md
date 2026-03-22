@@ -498,7 +498,7 @@ Items are ordered by priority. High-priority items should be tackled first as th
 - [x] **Rate limiting** — add `express-rate-limit` middleware to prevent abuse
 
 ### Security
-- [ ] **Helmet** — add `helmet()` middleware to set 14 security HTTP headers (CSP, HSTS, X-Frame-Options, etc.)
+- [x] **Helmet** — add `helmet()` middleware to set 14 security HTTP headers (CSP, HSTS, X-Frame-Options, etc.)
 - [x] **Input validation** — add `zod` or `joi` to validate and sanitise query params and request bodies at system boundaries
 - [ ] **Secrets management** — use Kubernetes Secrets or Vault/AWS Secrets Manager; never commit secrets to `values.yaml`
 - [x] **Image scanning** — integrate `trivy` or `docker scout` into the build pipeline to scan for CVEs before deploy
