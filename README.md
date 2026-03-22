@@ -1,6 +1,6 @@
 # timeserver
 
-A Node.js/TypeScript REST API that returns the current time in 4 timezones: Toronto, London, Mumbai, and Tokyo.
+A Node.js/TypeScript REST API that returns the current time in 5 timezones: Toronto, London, Mumbai, Tokyo, and Sydney.
 
 ---
 
@@ -23,7 +23,8 @@ A Node.js/TypeScript REST API that returns the current time in 4 timezones: Toro
 | `GET` | `/health/live` | Liveness probe — returns `status: "ok"` and uptime; Kubernetes restarts pod if this fails |
 | `GET` | `/health/ready` | Readiness probe — returns `status: "ok"`; Kubernetes removes pod from load balancer if this fails |
 | `GET` | `/metrics` | Prometheus metrics scrape endpoint (request counts, durations, Node.js process metrics) |
-| `GET` | `/api/v1/time` | Current time in Toronto, London, Mumbai, and Tokyo (rate limited: 100 req/min per IP) |
+| `GET` | `/api/v1/time` | Current time in Toronto, London, Mumbai, Tokyo, and Sydney (rate limited: 100 req/min per IP) |
+| `GET` | `/api/docs` | Interactive OpenAPI documentation (Swagger UI) |
 
 ### Sample Responses
 
@@ -51,6 +52,7 @@ A Node.js/TypeScript REST API that returns the current time in 4 timezones: Toro
   "london":  "2026-03-21, 02:00:00",
   "mumbai":  "2026-03-21, 07:30:00",
   "tokyo":   "2026-03-21, 11:00:00",
+  "sydney":  "2026-03-21, 13:00:00",
   "generatedAt": "2026-03-21T02:00:00.000Z"
 }
 ```
@@ -289,10 +291,14 @@ helm history timeserver         # view all revisions
 
 ```
 timeserver/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                # CI/CD pipeline (self-hosted runner)
 ├── src/
 │   ├── types.ts                  # Shared TypeScript interfaces
 │   ├── timeService.ts            # Timezone formatting logic
 │   ├── server.ts                 # Express app and route handlers
+│   ├── swagger.ts                # OpenAPI spec (served at /api/docs)
 │   └── __tests__/
 │       ├── timeService.test.ts   # Unit tests for time formatting
 │       └── server.test.ts        # Integration tests via supertest
@@ -311,7 +317,7 @@ timeserver/
 ├── .nvmrc                        # Pins Node 20
 ├── .dockerignore
 ├── .gitignore
-├── Dockerfile                    # Multi-stage build
+├── Dockerfile                    # Multi-stage build with apk upgrade + npm upgrade
 ├── package.json
 └── tsconfig.json
 ```
@@ -495,13 +501,13 @@ Items are ordered by priority. High-priority items should be tackled first as th
 - [ ] **Helmet** — add `helmet()` middleware to set 14 security HTTP headers (CSP, HSTS, X-Frame-Options, etc.)
 - [ ] **Input validation** — add `zod` or `joi` to validate and sanitise query params and request bodies at system boundaries
 - [ ] **Secrets management** — use Kubernetes Secrets or Vault/AWS Secrets Manager; never commit secrets to `values.yaml`
-- [ ] **Image scanning** — integrate `trivy` or `docker scout` into the build pipeline to scan for CVEs before deploy
+- [x] **Image scanning** — integrate `trivy` or `docker scout` into the build pipeline to scan for CVEs before deploy
 
 ### CI/CD Pipeline
 - [x] **GitHub Actions workflow** — `lint → test → build → image scan → helm lint → deploy → smoke tests` on every push
 - [ ] **ESLint** — add `eslint` with `@typescript-eslint` rules
 - [ ] **Pre-commit hooks** — add `husky` + `lint-staged` to enforce linting and tests before every commit
-- [ ] **Semantic versioning** — auto-generate image tags from git SHAs (`timeserver:$(git rev-parse --short HEAD)`)
+- [x] **Semantic versioning** — auto-generate image tags from git SHAs (`timeserver:$(git rev-parse --short HEAD)`)
 
 ### Kubernetes Hardening
 - [ ] **ConfigMap** — move `PORT`, `NODE_ENV` out of the Deployment template into a dedicated ConfigMap manifest
