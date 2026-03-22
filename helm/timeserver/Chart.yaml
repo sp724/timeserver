@@ -1,0 +1,6 @@
+apiVersion: v2
+name: timeserver
+version: 0.1.0
+appVersion: "1.0.0"
+type: application
+description: REST API returning current time in 4 timezones

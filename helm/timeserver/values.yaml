@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: timeserver
+  tag: latest
+  pullPolicy: Never  # Critical: local minikube image, no registry pull
+
+service:
+  type: NodePort
+  port: 8888
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 8888
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 8888
+  initialDelaySeconds: 3
+  periodSeconds: 5

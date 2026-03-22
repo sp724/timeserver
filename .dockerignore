@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.gitignore
+coverage
+*.test.ts
+src/__tests__
+tests/
+helm/
+.DS_Store
+*.md
