@@ -3,6 +3,9 @@ export interface TimeZoneConfig {
   timezone: string;
 }
 
+export const CITY_NAMES = ["toronto", "london", "mumbai", "tokyo", "sydney"] as const;
+export type CityName = typeof CITY_NAMES[number];
+
 export interface TimeResponse {
   toronto: string;
   london: string;

@@ -3,13 +3,15 @@ import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 import { randomUUID } from "crypto";
 import swaggerUi from "swagger-ui-express";
+import { z } from "zod";
 
 import { getCurrentTimes } from "./timeService";
 import { logger } from "./logger";
 import { register, httpRequestsTotal, httpRequestDurationMs } from "./metrics";
 import { startTracing, stopTracing } from "./tracing";
 import { swaggerSpec } from "./swagger";
-import { HealthResponse, ReadinessResponse, TimeResponse, ErrorResponse } from "./types";
+import { config } from "./config";
+import { HealthResponse, ReadinessResponse, TimeResponse, ErrorResponse, CITY_NAMES } from "./types";
 
 startTracing();
 
@@ -85,8 +87,32 @@ app.get("/health/ready", (_req: Request, res: Response<ReadinessResponse>) => {
   });
 });
 
-app.get("/api/v1/time", (_req: Request, res: Response<TimeResponse>) => {
-  res.json(getCurrentTimes());
+const citiesQuerySchema = z.object({
+  cities: z
+    .string()
+    .transform((v) => v.split(",").map((c) => c.trim().toLowerCase()))
+    .pipe(z.array(z.enum(CITY_NAMES)).min(1))
+    .optional(),
+});
+
+app.get("/api/v1/time", (req: Request, res: Response<TimeResponse | Record<string, string> | ErrorResponse>) => {
+  const result = citiesQuerySchema.safeParse(req.query);
+  if (!result.success) {
+    const message = result.error.issues[0]?.message ?? "Invalid query parameters";
+    return res.status(400).json({ error: "ValidationError", message });
+  }
+
+  const allTimes = getCurrentTimes();
+
+  if (!result.data.cities) {
+    return res.json(allTimes);
+  }
+
+  const filtered: Record<string, string> = { generatedAt: allTimes.generatedAt };
+  for (const city of result.data.cities) {
+    filtered[city] = allTimes[city];
+  }
+  return res.json(filtered);
 });
 
 // OpenAPI docs
@@ -116,7 +142,7 @@ export function errorHandler(
 
 app.use(errorHandler);
 
-const PORT = parseInt(process.env.PORT ?? "8888", 10);
+const PORT = config.PORT;
 
 /* istanbul ignore next */
 if (require.main === module) {

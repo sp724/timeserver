@@ -23,7 +23,7 @@ A Node.js/TypeScript REST API that returns the current time in 5 timezones: Toro
 | `GET` | `/health/live` | Liveness probe — returns `status: "ok"` and uptime; Kubernetes restarts pod if this fails |
 | `GET` | `/health/ready` | Readiness probe — returns `status: "ok"`; Kubernetes removes pod from load balancer if this fails |
 | `GET` | `/metrics` | Prometheus metrics scrape endpoint (request counts, durations, Node.js process metrics) |
-| `GET` | `/api/v1/time` | Current time in Toronto, London, Mumbai, Tokyo, and Sydney (rate limited: 100 req/min per IP) |
+| `GET` | `/api/v1/time` | Current time in all 5 cities; optional `?cities=toronto,sydney` to filter (rate limited: 100 req/min per IP) |
 | `GET` | `/api/docs` | Interactive OpenAPI documentation (Swagger UI) |
 
 ### Sample Responses
@@ -499,7 +499,7 @@ Items are ordered by priority. High-priority items should be tackled first as th
 
 ### Security
 - [ ] **Helmet** — add `helmet()` middleware to set 14 security HTTP headers (CSP, HSTS, X-Frame-Options, etc.)
-- [ ] **Input validation** — add `zod` or `joi` to validate and sanitise query params and request bodies at system boundaries
+- [x] **Input validation** — add `zod` or `joi` to validate and sanitise query params and request bodies at system boundaries
 - [ ] **Secrets management** — use Kubernetes Secrets or Vault/AWS Secrets Manager; never commit secrets to `values.yaml`
 - [x] **Image scanning** — integrate `trivy` or `docker scout` into the build pipeline to scan for CVEs before deploy
 

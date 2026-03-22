@@ -75,9 +75,19 @@ const options: swaggerJsdoc.Options = {
       },
       "/api/v1/time": {
         get: {
-          summary: "Current time in 4 timezones",
-          description: "Returns the current time in Toronto, London, Mumbai, and Tokyo. Rate limited to 100 requests per minute per IP.",
+          summary: "Current time in 5 timezones",
+          description: "Returns the current time in Toronto, London, Mumbai, Tokyo, and Sydney. Rate limited to 100 requests per minute per IP.",
           tags: ["Time"],
+          parameters: [
+            {
+              in: "query",
+              name: "cities",
+              required: false,
+              schema: { type: "string" },
+              description: "Comma-separated list of cities to include. Valid values: toronto, london, mumbai, tokyo, sydney. Omit to return all cities.",
+              example: "toronto,sydney",
+            },
+          ],
           responses: {
             "200": {
               description: "Current time in all 4 timezones",
@@ -92,6 +102,20 @@ const options: swaggerJsdoc.Options = {
                       tokyo: { type: "string", example: "2026-03-21, 11:00:00" },
                       sydney: { type: "string", example: "2026-03-21, 13:00:00" },
                       generatedAt: { type: "string", format: "date-time", example: "2026-03-21T02:00:00.000Z" },
+                    },
+                  },
+                },
+              },
+            },
+            "400": {
+              description: "Invalid cities query parameter",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: { type: "string", example: "ValidationError" },
+                      message: { type: "string", example: "Invalid enum value. Expected 'toronto' | 'london' | 'mumbai' | 'tokyo' | 'sydney'" },
                     },
                   },
                 },

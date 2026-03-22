@@ -90,6 +90,37 @@ describe("GET /api/v1/time", () => {
   });
 });
 
+describe("GET /api/v1/time - cities query param", () => {
+  it("filters to a single city", async () => {
+    const res = await request(app).get("/api/v1/time?cities=toronto");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("toronto");
+    expect(res.body).toHaveProperty("generatedAt");
+    expect(res.body).not.toHaveProperty("london");
+    expect(res.body).not.toHaveProperty("sydney");
+  });
+
+  it("filters to multiple cities", async () => {
+    const res = await request(app).get("/api/v1/time?cities=toronto,sydney");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("toronto");
+    expect(res.body).toHaveProperty("sydney");
+    expect(res.body).not.toHaveProperty("london");
+  });
+
+  it("returns 400 for an unknown city", async () => {
+    const res = await request(app).get("/api/v1/time?cities=berlin");
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("ValidationError");
+  });
+
+  it("returns 400 when any city in the list is invalid", async () => {
+    const res = await request(app).get("/api/v1/time?cities=toronto,invalid");
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("ValidationError");
+  });
+});
+
 describe("Unknown routes", () => {
   it("returns 404 with error NotFound", async () => {
     const res = await request(app).get("/does-not-exist");
