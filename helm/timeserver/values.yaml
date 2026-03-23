@@ -1,5 +1,37 @@
 replicaCount: 1
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+# Requires a CNI that enforces NetworkPolicy (e.g. Calico, Cilium).
+# minikube's default CNI does not enforce NetworkPolicy.
+networkPolicy:
+  enabled: false
+
+# Caps total CPU, memory, and pod count for the entire namespace.
+# Note: quota applies to all workloads in the namespace, not just this release.
+resourceQuota:
+  enabled: false
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  maxPods: "10"
+
+config:
+  port: "8888"
+  nodeEnv: "production"
+
 image:
   repository: timeserver
   tag: latest
