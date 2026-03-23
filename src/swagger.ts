@@ -84,8 +84,8 @@ const options: swaggerJsdoc.Options = {
               name: "cities",
               required: false,
               schema: { type: "string" },
-              description: "Comma-separated list of cities to include. Valid values: toronto, london, mumbai, tokyo, sydney. Omit to return all cities.",
-              example: "toronto,sydney",
+              description: "Comma-separated list of cities to include. Valid values: toronto, london, mumbai, tokyo, sydney, los_angeles. Omit to return all cities.",
+              example: "toronto,los_angeles",
             },
           ],
           responses: {
@@ -101,6 +101,7 @@ const options: swaggerJsdoc.Options = {
                       mumbai: { type: "string", example: "2026-03-21, 07:30:00" },
                       tokyo: { type: "string", example: "2026-03-21, 11:00:00" },
                       sydney: { type: "string", example: "2026-03-21, 13:00:00" },
+                      los_angeles: { type: "string", example: "2026-03-20, 19:00:00" },
                       generatedAt: { type: "string", format: "date-time", example: "2026-03-21T02:00:00.000Z" },
                     },
                   },
@@ -115,7 +116,7 @@ const options: swaggerJsdoc.Options = {
                     type: "object",
                     properties: {
                       error: { type: "string", example: "ValidationError" },
-                      message: { type: "string", example: "Invalid enum value. Expected 'toronto' | 'london' | 'mumbai' | 'tokyo' | 'sydney'" },
+                      message: { type: "string", example: "Invalid enum value. Expected 'toronto' | 'london' | 'mumbai' | 'tokyo' | 'sydney' | 'los_angeles'" },
                     },
                   },
                 },
