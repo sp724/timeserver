@@ -32,6 +32,16 @@ config:
   port: "8888"
   nodeEnv: "production"
 
+# Never put real secret values here — values.yaml is committed to source control.
+# Instead, pass secrets at deploy time via --set or a gitignored values file:
+#   helm upgrade timeserver ./helm/timeserver -f values.secret.yaml
+# See values.secret.yaml.example for the expected structure.
+secret:
+  create: false
+  data: {}
+  # data:
+  #   OTEL_EXPORTER_OTLP_ENDPOINT: ""
+
 image:
   repository: timeserver
   tag: latest
