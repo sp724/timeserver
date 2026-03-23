@@ -4,6 +4,7 @@ PORT      ?= 8888
 NAMESPACE ?= default
 
 .PHONY: help install dev build start test lint docker-build docker-run docker-stop \
+        compose-up compose-down compose-logs \
         minikube-load helm-install helm-upgrade helm-uninstall deploy smoke-test
 
 help: ## Show this help
@@ -41,6 +42,17 @@ docker-run: ## Run container on PORT (default 8888)
 
 docker-stop: ## Stop and remove the container
 	docker stop timeserver && docker rm timeserver
+
+# ── Docker Compose (timeserver + Prometheus + Grafana) ───────────────────────
+
+compose-up: ## Start full local stack (timeserver, Prometheus, Grafana)
+	docker compose up --build -d
+
+compose-down: ## Stop and remove compose stack
+	docker compose down
+
+compose-logs: ## Tail logs for all compose services
+	docker compose logs -f
 
 # ── Kubernetes / Helm ────────────────────────────────────────────────────────
 
