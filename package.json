@@ -9,7 +9,8 @@
     "build": "tsc",
     "test": "jest --coverage --coverageReporters=text lcov",
     "lint": "eslint src/",
-    "smoke-test": "bash tests/smoke/run-smoke-tests.sh"
+    "smoke-test": "bash tests/smoke/run-smoke-tests.sh",
+    "prepare": "husky"
   },
   "dependencies": {
     "@opentelemetry/sdk-node": "^0.213.0",
@@ -36,13 +37,21 @@
     "@typescript-eslint/eslint-plugin": "^8.57.1",
     "@typescript-eslint/parser": "^8.57.1",
     "eslint": "^10.1.0",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "lint-staged": "^16.4.0",
     "newman": "^6.1.2",
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.57.1"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --max-warnings 0",
+      "bash -c 'tsc --noEmit'"
+    ]
   },
   "jest": {
     "preset": "ts-jest",
