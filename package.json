@@ -10,7 +10,7 @@
     "test": "jest --coverage --coverageReporters=text lcov",
     "lint": "eslint src/",
     "smoke-test": "bash tests/smoke/run-smoke-tests.sh",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@opentelemetry/sdk-node": "^0.213.0",
