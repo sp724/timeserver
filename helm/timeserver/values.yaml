@@ -16,6 +16,18 @@ podDisruptionBudget:
 networkPolicy:
   enabled: false
 
+# Caps total CPU, memory, and pod count for the entire namespace.
+# Note: quota applies to all workloads in the namespace, not just this release.
+resourceQuota:
+  enabled: false
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  maxPods: "10"
+
 config:
   port: "8888"
   nodeEnv: "production"
