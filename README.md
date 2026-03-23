@@ -293,15 +293,19 @@ helm history timeserver         # view all revisions
 timeserver/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                # CI/CD pipeline (self-hosted runner)
+│       └── ci.yml                    # CI/CD pipeline (self-hosted runner)
+├── .husky/
+│   └── pre-commit                    # Runs lint-staged before every commit
 ├── src/
-│   ├── types.ts                  # Shared TypeScript interfaces
-│   ├── timeService.ts            # Timezone formatting logic
-│   ├── server.ts                 # Express app and route handlers
-│   ├── swagger.ts                # OpenAPI spec (served at /api/docs)
+│   ├── config.ts                     # Zod env var validation (fails fast on bad config)
+│   ├── types.ts                      # Shared TypeScript interfaces
+│   ├── timeService.ts                # Timezone formatting logic
+│   ├── server.ts                     # Express app and route handlers
+│   ├── swagger.ts                    # OpenAPI spec (served at /api/docs)
 │   └── __tests__/
-│       ├── timeService.test.ts   # Unit tests for time formatting
-│       └── server.test.ts        # Integration tests via supertest
+│       ├── config.test.ts            # Config schema tests
+│       ├── timeService.test.ts       # Unit tests for time formatting
+│       └── server.test.ts            # Integration tests via supertest
 ├── tests/
 │   └── smoke/
 │       ├── timeserver.postman_collection.json
@@ -309,15 +313,24 @@ timeserver/
 ├── helm/
 │   └── timeserver/
 │       ├── Chart.yaml
-│       ├── values.yaml
+│       ├── values.yaml               # Default values (no secrets)
+│       ├── values.secret.yaml.example  # Template for gitignored secrets file
 │       └── templates/
 │           ├── _helpers.tpl
+│           ├── configmap.yaml        # PORT, NODE_ENV
+│           ├── secret.yaml           # Optional Kubernetes Secret (secret.create)
 │           ├── deployment.yaml
-│           └── service.yaml
-├── .nvmrc                        # Pins Node 20
+│           ├── service.yaml
+│           ├── hpa.yaml              # Horizontal Pod Autoscaler (autoscaling.enabled)
+│           ├── pdb.yaml              # Pod Disruption Budget (podDisruptionBudget.enabled)
+│           ├── networkpolicy.yaml    # Network Policy (networkPolicy.enabled)
+│           ├── resourcequota.yaml    # Resource Quota (resourceQuota.enabled)
+│           └── servicemonitor.yaml   # Prometheus ServiceMonitor
+├── .nvmrc                            # Pins Node 20
 ├── .dockerignore
 ├── .gitignore
-├── Dockerfile                    # Multi-stage build with apk upgrade + npm upgrade
+├── Dockerfile                        # Multi-stage build with apk upgrade + npm upgrade
+├── eslint.config.mjs                 # ESLint flat config with @typescript-eslint
 ├── package.json
 └── tsconfig.json
 ```
@@ -510,11 +523,11 @@ Items are ordered by priority. High-priority items should be tackled first as th
 - [x] **Semantic versioning** — auto-generate image tags from git SHAs (`timeserver:$(git rev-parse --short HEAD)`)
 
 ### Kubernetes Hardening
-- [ ] **ConfigMap** — move `PORT`, `NODE_ENV` out of the Deployment template into a dedicated ConfigMap manifest
-- [ ] **Horizontal Pod Autoscaler (HPA)** — scale pod count automatically based on CPU/memory (requires `metrics-server` addon)
-- [ ] **Pod Disruption Budget (PDB)** — guarantee minimum number of pods remain running during node maintenance or rolling deploys
-- [ ] **Network Policy** — restrict inter-pod traffic to only what is explicitly required
-- [ ] **Resource quotas per namespace** — cap total CPU/memory consumption to prevent one service starving others
+- [x] **ConfigMap** — move `PORT`, `NODE_ENV` out of the Deployment template into a dedicated ConfigMap manifest
+- [x] **Horizontal Pod Autoscaler (HPA)** — scale pod count automatically based on CPU/memory (requires `metrics-server` addon)
+- [x] **Pod Disruption Budget (PDB)** — guarantee minimum number of pods remain running during node maintenance or rolling deploys
+- [x] **Network Policy** — restrict inter-pod traffic to only what is explicitly required
+- [x] **Resource quotas per namespace** — cap total CPU/memory consumption to prevent one service starving others
 
 ### Developer Experience
 - [ ] **`docker-compose.yml`** — enable full local stack with a single `docker compose up`, without needing minikube
