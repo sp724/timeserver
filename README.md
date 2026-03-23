@@ -1,7 +1,9 @@
 # timeserver
 
 A Node.js/TypeScript REST API that returns the current time in 5 timezones: Toronto, London, Mumbai, Tokyo, and Sydney.
-v1
+
+**[Documentation](https://sp724.github.io/timeserver/)** | **[Source](https://github.com/sp724/timeserver)**
+
 ---
 
 ## Prerequisites
@@ -159,6 +161,55 @@ docker stop timeserver && docker rm timeserver
 
 ---
 
+## Docker Compose
+
+Bring up the full local stack — timeserver, Prometheus, and Grafana — with a single command. No minikube required.
+
+```bash
+docker compose up --build -d
+# or
+make compose-up
+```
+
+| Service | URL | Credentials |
+|---|---|---|
+| timeserver | http://localhost:8888 | — |
+| Prometheus | http://localhost:9090 | — |
+| Grafana | http://localhost:3000 | `admin` / `admin` |
+
+Prometheus is pre-configured to scrape `/metrics`. Grafana auto-provisions the Prometheus datasource on startup.
+
+```bash
+make compose-down   # stop and remove
+make compose-logs   # tail logs
+```
+
+---
+
+## Makefile
+
+Common workflows wrapped as `make` targets:
+
+```bash
+make dev            # run with ts-node (no compile step)
+make test           # jest with coverage
+make lint           # eslint
+make build          # tsc → dist/
+make docker-build   # build image tagged with git SHA
+make compose-up     # start docker-compose stack
+make deploy         # build → minikube load → helm upgrade --wait
+make smoke-test     # run Newman smoke tests
+make help           # list all targets
+```
+
+Override defaults:
+
+```bash
+make deploy IMAGE=myrepo/timeserver TAG=v2
+```
+
+---
+
 ## Minikube Deployment (Helm)
 
 ### 1. Start minikube
@@ -257,23 +308,18 @@ helm uninstall timeserver
 
 ## Redeploying Changes
 
-After modifying source code, follow this workflow to redeploy to minikube. Always increment the image tag — never reuse `latest`, as minikube's container runtime won't reload an image it already has by that name.
+The `make deploy` target handles the full redeploy — it builds a new image tagged with the current git SHA, loads it into minikube, and runs `helm upgrade --wait`:
 
 ```bash
-# 1. Recompile TypeScript
-npm run build
+make deploy
+```
 
-# 2. Build a new Docker image with an incremented tag
+Or manually with a specific tag:
+
+```bash
 docker build -t timeserver:v2 .
-
-# 3. Load the new image into minikube
 minikube image load timeserver:v2
-
-# 4. Upgrade the Helm release with the new tag
-helm upgrade timeserver ./helm/timeserver --set image.tag=v2
-
-# 5. Wait for the rollout to complete
-kubectl rollout status deployment/timeserver-timeserver
+helm upgrade timeserver ./helm/timeserver --set image.tag=v2 --wait
 ```
 
 ### Rollback
@@ -293,7 +339,8 @@ helm history timeserver         # view all revisions
 timeserver/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                    # CI/CD pipeline (self-hosted runner)
+│       ├── ci.yml                    # CI/CD pipeline (self-hosted runner)
+│       └── docs.yml                  # Deploy Docusaurus site to GitHub Pages
 ├── .husky/
 │   └── pre-commit                    # Runs lint-staged before every commit
 ├── src/
@@ -326,11 +373,21 @@ timeserver/
 │           ├── networkpolicy.yaml    # Network Policy (networkPolicy.enabled)
 │           ├── resourcequota.yaml    # Resource Quota (resourceQuota.enabled)
 │           └── servicemonitor.yaml   # Prometheus ServiceMonitor
+├── docker/
+│   ├── prometheus/
+│   │   └── prometheus.yml            # Prometheus scrape config for compose stack
+│   └── grafana/
+│       └── provisioning/
+│           └── datasources/
+│               └── prometheus.yml    # Auto-provisions Prometheus datasource in Grafana
+├── docs/                             # Docusaurus documentation site (GitHub Pages)
 ├── .nvmrc                            # Pins Node 20
 ├── .dockerignore
 ├── .gitignore
+├── docker-compose.yml                # Full local stack: timeserver + Prometheus + Grafana
 ├── Dockerfile                        # Multi-stage build with apk upgrade + npm upgrade
 ├── eslint.config.mjs                 # ESLint flat config with @typescript-eslint
+├── Makefile                          # Common dev/build/deploy workflows
 ├── package.json
 └── tsconfig.json
 ```
@@ -530,6 +587,7 @@ Items are ordered by priority. High-priority items should be tackled first as th
 - [x] **Resource quotas per namespace** — cap total CPU/memory consumption to prevent one service starving others
 
 ### Developer Experience
-- [x] **`docker-compose.yml`** — enable full local stack with a single `docker compose up`, without needing minikube
-- [x] **`Makefile`** — wrap common command sequences (`make test`, `make build`, `make deploy TAG=v3`)
-- [x] **OpenAPI docs** — add `swagger-jsdoc` + `swagger-ui-express` to auto-generate and serve API docs at `/api/docs`
+- [x] **`docker-compose.yml`** — full local stack (timeserver + Prometheus + Grafana) with a single `docker compose up`
+- [x] **`Makefile`** — wrap common command sequences (`make test`, `make build`, `make deploy`, `make compose-up`)
+- [x] **OpenAPI docs** — `swagger-jsdoc` + `swagger-ui-express` serving interactive docs at `/api/docs`
+- [x] **Docusaurus documentation** — full project docs site at [sp724.github.io/timeserver](https://sp724.github.io/timeserver/) covering API, deployment, observability, CI/CD, Kubernetes, and secrets
