@@ -22,11 +22,9 @@ spec:
             - name: http
               containerPort: 8888
               protocol: TCP
-          env:
-            - name: PORT
-              value: "8888"
-            - name: NODE_ENV
-              value: "production"
+          envFrom:
+            - configMapRef:
+                name: {{ include "timeserver.fullname" . }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
