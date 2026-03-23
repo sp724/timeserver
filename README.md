@@ -531,5 +531,5 @@ Items are ordered by priority. High-priority items should be tackled first as th
 
 ### Developer Experience
 - [ ] **`docker-compose.yml`** — enable full local stack with a single `docker compose up`, without needing minikube
-- [ ] **`Makefile`** — wrap common command sequences (`make test`, `make build`, `make deploy TAG=v3`)
+- [x] **`Makefile`** — wrap common command sequences (`make test`, `make build`, `make deploy TAG=v3`)
 - [x] **OpenAPI docs** — add `swagger-jsdoc` + `swagger-ui-express` to auto-generate and serve API docs at `/api/docs`
