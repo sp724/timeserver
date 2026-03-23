@@ -1,0 +1,27 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "timeserver.fullname" . }}
+  labels:
+    {{- include "timeserver.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "timeserver.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow inbound API traffic on port 8888 from any source
+    - ports:
+        - port: 8888
+          protocol: TCP
+  egress:
+    # Allow DNS resolution — required for any outbound hostname lookups
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+{{- end }}

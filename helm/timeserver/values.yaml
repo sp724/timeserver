@@ -11,6 +11,11 @@ podDisruptionBudget:
   enabled: false
   minAvailable: 1
 
+# Requires a CNI that enforces NetworkPolicy (e.g. Calico, Cilium).
+# minikube's default CNI does not enforce NetworkPolicy.
+networkPolicy:
+  enabled: false
+
 config:
   port: "8888"
   nodeEnv: "production"
