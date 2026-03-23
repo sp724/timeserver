@@ -10,3 +10,4 @@ coverage/
 .vscode/
 .idea/
 actions-runner/
+*.secret.yaml
