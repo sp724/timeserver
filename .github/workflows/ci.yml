@@ -73,7 +73,7 @@ jobs:
           if ! command -v trivy &> /dev/null; then
             brew install aquasecurity/trivy/trivy
           fi
-          echo "Trivy version: $(trivy --version)"
+          echo "SKP Trivy version: $(trivy --version)"
 
       - name: Scan image with Trivy
         run: trivy image --exit-code 1 --ignore-unfixed --severity CRITICAL,HIGH timeserver:${{ github.sha }}
