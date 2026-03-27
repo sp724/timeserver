@@ -73,6 +73,7 @@ jobs:
           if ! command -v trivy &> /dev/null; then
             brew install aquasecurity/trivy/trivy
           fi
+          echo "Trivy version: $(trivy --version)"
 
       - name: Scan image with Trivy
         run: trivy image --exit-code 1 --ignore-unfixed --severity CRITICAL,HIGH timeserver:${{ github.sha }}
@@ -123,7 +124,7 @@ jobs:
         run: npm run smoke-test
 
       - name: Stop background server
-        if: always()
+        if: ${{ always() }}
         run: lsof -ti:8888 | xargs kill -9 2>/dev/null || true
 
   # ── 6. Deploy to minikube ────────────────────────────────────────────────────
@@ -131,7 +132,7 @@ jobs:
     name: Deploy to Minikube
     runs-on: self-hosted
     needs: [build-and-scan, helm-lint, smoke-test]
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -180,5 +181,5 @@ jobs:
         run: npm run smoke-test
 
       - name: Stop port-forward
-        if: always()
+        if: ${{ always() }}
         run: kill $PF_PID 2>/dev/null || true
