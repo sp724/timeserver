@@ -30,6 +30,7 @@ export function getCurrentTimes(now: Date = new Date()): TimeResponse {
   }
 
   return {
+    greeting: "Hello! Here are the current times in various cities:",
     toronto: times["toronto"],
     london: times["london"],
     mumbai: times["mumbai"],

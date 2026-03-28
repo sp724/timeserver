@@ -7,6 +7,7 @@ export const CITY_NAMES = ["toronto", "london", "mumbai", "tokyo", "sydney", "lo
 export type CityName = typeof CITY_NAMES[number];
 
 export interface TimeResponse {
+  greeting: string;
   toronto: string;
   london: string;
   mumbai: string;
