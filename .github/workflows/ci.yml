@@ -23,6 +23,7 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
+    needs: [CI/CD Pipeline]
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +40,7 @@ jobs:
   type-check:
     name: Type Check
     runs-on: self-hosted
+    needs: [lint]
     steps:
       - uses: actions/checkout@v4
 
@@ -55,6 +57,7 @@ jobs:
   test:
     name: Unit Tests
     runs-on: self-hosted
+    needs: [type-check]
     steps:
       - uses: actions/checkout@v4
 
