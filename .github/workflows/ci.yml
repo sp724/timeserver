@@ -17,7 +17,7 @@ jobs:
       - name: Welcome message
         run: | 
           echo "Starting CI/CD pipeline for timeserver project! 🚀"
-          pwd
+          ps aux
 
   # ── 1. Lint ──────────────────────────────────────────────────────────────────
   lint:
