@@ -9,6 +9,16 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+
+  intro:
+    name: CI/CD Pipeline
+    runs-on: self-hosted
+    steps:
+      - name: Welcome message
+        run: | 
+          echo "Starting CI/CD pipeline for timeserver project! 🚀"
+          pwd
+
   # ── 1. Lint ──────────────────────────────────────────────────────────────────
   lint:
     name: Lint
@@ -73,7 +83,7 @@ jobs:
           if ! command -v trivy &> /dev/null; then
             brew install aquasecurity/trivy/trivy
           fi
-          echo "SKP Trivy version: $(trivy --version)"
+          
 
       - name: Scan image with Trivy
         run: trivy image --exit-code 1 --ignore-unfixed --severity CRITICAL,HIGH timeserver:${{ github.sha }}
