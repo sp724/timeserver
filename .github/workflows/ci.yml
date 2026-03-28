@@ -23,7 +23,7 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
-    needs: [Pipeline]
+    
     steps:
       - uses: actions/checkout@v4
 
