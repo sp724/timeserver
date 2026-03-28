@@ -549,6 +549,10 @@ nodejs_heap_size_used_bytes
 4. Paste any of the queries above and click **Run query**
 5. Click **Save dashboard** to persist it
 
+### 7. How to start GitHub Actions Local Runner
+cd /Users/sureshpatel/Documents/DevProjects/Anthropic/Claude/Projects/timeserver/actions-runner
+./run.sh
+
 ---
 
 ## TODO — Enterprise Improvements
