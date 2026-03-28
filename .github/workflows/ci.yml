@@ -11,7 +11,7 @@ env:
 jobs:
 
   intro:
-    name: CI/CD Pipeline
+    name: Pipeline
     runs-on: self-hosted
     steps:
       - name: Welcome message
@@ -23,7 +23,7 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
-    needs: [CI/CD Pipeline]
+    needs: [Pipeline]
     steps:
       - uses: actions/checkout@v4
 
